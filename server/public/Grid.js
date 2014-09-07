@@ -7,7 +7,8 @@ var Grid = function(size, containerElem) {
         this.cells[x] = [];
         for (y=0; y<this.size; y++) {
             this.cells[x][y] = new Cell(x, y);
-            this.cells[x][y].attachTouchUpHandler(this.cellTapped);
+            this.cells[x][y].bind('activate', this.cellActivated.bind(this));
+            this.cells[x][y].bind('deactivate', this.cellDeactivated.bind(this));
         }
     }
 
@@ -28,6 +29,10 @@ Grid.prototype.createDOMRow = function(rowOfCells) {
     return row;
 }
 
-Grid.prototype.cellTapped = function(x, y) {
-    console.log('cellTapped', x, y);
+Grid.prototype.cellActivated = function (cellCoord) {
+    console.log('activate', cellCoord);
+}
+
+Grid.prototype.cellDeactivated = function (cellCoord) {
+    console.log('deactivate', cellCoord);
 }

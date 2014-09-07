@@ -29,23 +29,28 @@ var Cell = function(x, y) {
     this.bind('tdDeactivate', this.deactivate.bind(this));
 }
 
-Cell.prototype.attachTouchUpHandler = function (callback /* x, y */) {
-    callback.bind(this, this.coord.x, this.coord.y);
-    this.element.get(0).addEventListener('click', callback.bind(this, this.coord.x, this.coord.y));
-}
-
 // The cell was pressed on/dragged over/clicked on. Basically, the event that
 // should make the cell light up because it is being interacted with.
 // Called by TouchDrag
 Cell.prototype.activate = function() {
+    if (this.active) return;
+
     this.active = true;
     this.element.addClass('active');
+
+    // Refire the event for the Grid class to listen to
+    this.trigger('activate', this.coord);
 }
 
 // The cell has stopped being dragged over/touched. Called by TouchDrag
 Cell.prototype.deactivate = function() {
+    if (!this.active) return;
+
     this.active = false;
     this.element.removeClass('active');
+
+    // Refire the event for the Grid class to listen to
+    this.trigger('deactivate', this.coord);
 }
 
 MicroEvent.mixin(Cell);

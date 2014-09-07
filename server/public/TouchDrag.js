@@ -18,6 +18,9 @@ var TouchDrag = function(eventTarget) {
 }
 
 TouchDrag.prototype._handleTouchStart = function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+    
     // TODO: handle multiple touches?
     var touchEv = event.changedTouches[0];
     var hoverElem = document.elementFromPoint(touchEv.pageX, touchEv.pageY);
