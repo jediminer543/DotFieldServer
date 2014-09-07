@@ -21,55 +21,60 @@ TouchDrag.prototype._handleTouchStart = function (event) {
     event.stopPropagation();
     event.preventDefault();
     
-    // TODO: handle multiple touches?
-    var touchEv = event.changedTouches[0];
-    var hoverElem = document.elementFromPoint(touchEv.pageX, touchEv.pageY);
+    for (var i=0; i<event.changedTouches.length; i++) {
+        var touchEv = event.changedTouches[i];
+        var hoverElem = document.elementFromPoint(touchEv.pageX, touchEv.pageY);
 
-    if ('jsObj' in hoverElem) {
-        // we have touched on a cell
-        this.currentTouches[touchEv.identifier] = hoverElem.jsObj; // save the current cell
-        hoverElem.jsObj.trigger('tdActivate');
-    } else {
-        // we have touched on a non-cell
-        this.currentTouches[touchEv.identifier] = null;
-    }
+        if ('jsObj' in hoverElem) {
+            // we have touched on a cell
+            this.currentTouches[touchEv.identifier] = hoverElem.jsObj; // save the current cell
+            hoverElem.jsObj.trigger('tdActivate');
+        } else {
+            // we have touched on a non-cell
+            this.currentTouches[touchEv.identifier] = null;
+        }
+    };
 }
 
 TouchDrag.prototype._handleTouchMove = function (event) {
-    var touchEv = event.changedTouches[0];
-    var ident = touchEv.identifier;
-    var hoverElem = document.elementFromPoint(touchEv.pageX, touchEv.pageY);
+    for (var i=0; i<event.changedTouches.length; i++) {
+        var touchEv = event.changedTouches[i];
+        var ident = touchEv.identifier;
+        var hoverElem = document.elementFromPoint(touchEv.pageX, touchEv.pageY);
 
-    // possible options:
-    // moved from cell to different cell
-    // moved from non-cell to cell
-    // moved from cell to non-cell
-    // moved from cell to same cell - do nothing
-    // moved from non-cell to non-cell - we don't care
-
-    if (this.currentTouches[ident] != null && hoverElem != null && 'jsObj' in hoverElem && this.currentTouches[ident] != hoverElem.jsObj) {
+        // possible options:
         // moved from cell to different cell
-        this.currentTouches[ident].trigger('tdDeactivate');
-        hoverElem.jsObj.trigger('tdActivate');
-        this.currentTouches[ident] = hoverElem.jsObj;
-    } else if (this.currentTouches[ident] == null && hoverElem != null && 'jsObj' in hoverElem) {
         // moved from non-cell to cell
-        hoverElem.jsObj.trigger('tdActivate');
-        this.currentTouches[ident] = hoverElem.jsObj;
-    } else if (this.currentTouches[ident] != null && (hoverElem == null || !('jsObj' in hoverElem))) {
         // moved from cell to non-cell
-        this.currentTouches[ident].trigger('tdDeactivate');
-        this.currentTouches[ident] = null;
+        // moved from cell to same cell - do nothing
+        // moved from non-cell to non-cell - we don't care
+
+        if (this.currentTouches[ident] != null && hoverElem != null && 'jsObj' in hoverElem && this.currentTouches[ident] != hoverElem.jsObj) {
+            // moved from cell to different cell
+            this.currentTouches[ident].trigger('tdDeactivate');
+            hoverElem.jsObj.trigger('tdActivate');
+            this.currentTouches[ident] = hoverElem.jsObj;
+        } else if (this.currentTouches[ident] == null && hoverElem != null && 'jsObj' in hoverElem) {
+            // moved from non-cell to cell
+            hoverElem.jsObj.trigger('tdActivate');
+            this.currentTouches[ident] = hoverElem.jsObj;
+        } else if (this.currentTouches[ident] != null && (hoverElem == null || !('jsObj' in hoverElem))) {
+            // moved from cell to non-cell
+            this.currentTouches[ident].trigger('tdDeactivate');
+            this.currentTouches[ident] = null;
+        }
     }
 }
 
 TouchDrag.prototype._handleTouchUp = function (event) {
-    var touchEv = event.changedTouches[0];
-    var ident = touchEv.identifier;
+    for (var i=0; i<event.changedTouches.length; i++) {
+        var touchEv = event.changedTouches[i];
+        var ident = touchEv.identifier;
 
-    if (ident in this.currentTouches && this.currentTouches[ident] != null) {
-        // we have removed a finger, and it was on a cell when it lifted up
-        this.currentTouches[ident].trigger('tdDeactivate');
-        delete this.currentTouches[ident];
+        if (ident in this.currentTouches && this.currentTouches[ident] != null) {
+            // we have removed a finger, and it was on a cell when it lifted up
+            this.currentTouches[ident].trigger('tdDeactivate');
+            delete this.currentTouches[ident];
+        }
     }
 }
