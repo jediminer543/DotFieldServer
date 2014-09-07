@@ -17,7 +17,6 @@ var Cell = function(x, y) {
             // user is dragging
             this.activate();
         }
-        // console.log(event);
     }.bind(this));
 
     this.element.get(0).addEventListener('mouseout', function (event) {
@@ -25,18 +24,6 @@ var Cell = function(x, y) {
             this.deactivate();
         }
     }.bind(this));
-
-    // this.element.get(0).addEventListener('touchstart', function (event) {
-    //     console.log('touchstart', event);
-    // });
-
-    // this.element.get(0).addEventListener('touchmove', function (event) {
-    //     console.log('touchmove', event);
-    // });
-
-    // this.element.get(0).addEventListener('touchend', function (event) {
-    //     console.log('touchend', event);
-    // });
 }
 
 Cell.prototype.attachTouchUpHandler = function (callback /* x, y */) {
@@ -46,14 +33,14 @@ Cell.prototype.attachTouchUpHandler = function (callback /* x, y */) {
 
 // The cell was pressed on/dragged over/clicked on. Basically, the event that
 // should make the cell light up because it is being interacted with.
+// Called by TouchDrag
 Cell.prototype.activate = function() {
-    console.log('activated ' + this.coord.x + ', ' + this.coord.y);
     this.active = true;
     this.element.addClass('active');
 }
 
+// The cell has stopped being dragged over/touched. Called by TouchDrag
 Cell.prototype.deactivate = function() {
-    console.log('deactivate ' + this.coord.x + ', ' + this.coord.y);
     this.active = false;
     this.element.removeClass('active');
 }

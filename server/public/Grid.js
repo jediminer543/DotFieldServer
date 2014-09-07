@@ -18,66 +18,8 @@ var Grid = function(size, containerElem) {
     }.bind(this));
     this.container.append(this.domGrid);
 
-
-
-    var currentTouches = {};
-
-    // Attach touch events to the main grid
-    this.domGrid.get(0).addEventListener('touchstart', function (event) {
-        // TODO: handle multiple touches?
-        var touchEv = event.changedTouches[0];
-        var hoverElem = document.elementFromPoint(touchEv.pageX, touchEv.pageY);
-
-        if ('jsObj' in hoverElem) {
-            // we have touched on a cell
-            currentTouches[touchEv.identifier] = hoverElem.jsObj; // save the current cell
-            hoverElem.jsObj.activate();
-        } else {
-            // we have touched on a non-cell
-            currentTouches[touchEv.identifier] = null;
-        }
-    });
-
-    this.domGrid.get(0).addEventListener('touchmove', function (event) {
-        var touchEv = event.changedTouches[0];
-        var ident = touchEv.identifier;
-        var hoverElem = document.elementFromPoint(touchEv.pageX, touchEv.pageY);
-
-        // possible options:
-        // moved from cell to different cell
-        // moved from non-cell to cell
-        // moved from cell to non-cell
-        // moved from cell to same cell - do nothing
-        // moved from non-cell to non-cell - we don't care
-
-        if (currentTouches[ident] != null && hoverElem != null && 'jsObj' in hoverElem && currentTouches[ident] != hoverElem.jsObj) {
-            // moved from cell to different cell
-            currentTouches[ident].deactivate();
-            hoverElem.jsObj.activate();
-            currentTouches[ident] = hoverElem.jsObj;
-        } else if (currentTouches[ident] == null && hoverElem != null && 'jsObj' in hoverElem) {
-            // moved from non-cell to cell
-            hoverElem.jsObj.activate();
-            currentTouches[ident] = hoverElem.jsObj;
-        } else if (currentTouches[ident] != null && (hoverElem == null || !('jsObj' in hoverElem))) {
-            // moved from cell to non-cell
-            currentTouches[ident].deactivate();
-            currentTouches[ident] = null;
-        }
-    });
-
-    this.domGrid.get(0).addEventListener('touchend', function (event) {
-        var touchEv = event.changedTouches[0];
-        var ident = touchEv.identifier;
-
-        if (ident in currentTouches && currentTouches[ident] != null) {
-            // we have removed a finger, and it was on a cell when it lifted up
-            currentTouches[ident].deactivate();
-            delete currentTouches[ident];
-        }
-    });
-
-    // todo add touchcancel
+    // Handle touch events to emulate touchEnter or touchLeave behaviour
+    new TouchDrag(document.body);
 }
 
 Grid.prototype.createDOMRow = function(rowOfCells) {
