@@ -7,7 +7,8 @@ body {
     width: 35px;
     height: 35px;
     background-color: black;
-    border: solid 1px white;
+    border-left: solid 1px white;
+    border-top: solid 1px white;
     transition: background-color 1s;
 
     -webkit-touch-callout: none; /* disable text selection */
@@ -17,6 +18,14 @@ body {
     -ms-user-select: none;
     user-select: none;
     -ms-touch-action: none; /* disable double-tap-to-zoom on IE */
+}
+
+.cell:last-child {
+    border-right: solid 1px white;
+}
+
+.row:last-child .cell {
+    border-bottom: solid 1px white;
 }
 
 .cell.active {
