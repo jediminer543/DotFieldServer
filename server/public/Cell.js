@@ -24,6 +24,9 @@ var Cell = function(x, y) {
             this.deactivate();
         }
     }.bind(this));
+
+    this.bind('tdActivate', this.activate.bind(this));
+    this.bind('tdDeactivate', this.deactivate.bind(this));
 }
 
 Cell.prototype.attachTouchUpHandler = function (callback /* x, y */) {
@@ -44,3 +47,5 @@ Cell.prototype.deactivate = function() {
     this.active = false;
     this.element.removeClass('active');
 }
+
+MicroEvent.mixin(Cell);

@@ -3,8 +3,8 @@
  * Allows you to start touching on an element and as the finger moves over other elements, call methods
  * informing the element when the finger is over it, and when the finger leaves it.
  *
- * Only DOM elements that have a 'jsObj' Javascript object property defined will have methods
- * called on it
+ * Only DOM elements that have a 'jsObj' Javascript object property defined will have events triggered
+ * on them. The MicroEvent library needs to be mixed into the receiving class for it to not crash.
  */
 var TouchDrag = function(eventTarget) {
     this.eventTarget = eventTarget;
@@ -25,7 +25,7 @@ TouchDrag.prototype._handleTouchStart = function (event) {
     if ('jsObj' in hoverElem) {
         // we have touched on a cell
         this.currentTouches[touchEv.identifier] = hoverElem.jsObj; // save the current cell
-        hoverElem.jsObj.activate();
+        hoverElem.jsObj.trigger('tdActivate');
     } else {
         // we have touched on a non-cell
         this.currentTouches[touchEv.identifier] = null;
@@ -46,16 +46,16 @@ TouchDrag.prototype._handleTouchMove = function (event) {
 
     if (this.currentTouches[ident] != null && hoverElem != null && 'jsObj' in hoverElem && this.currentTouches[ident] != hoverElem.jsObj) {
         // moved from cell to different cell
-        this.currentTouches[ident].deactivate();
-        hoverElem.jsObj.activate();
+        this.currentTouches[ident].trigger('tdDeactivate');
+        hoverElem.jsObj.trigger('tdActivate');
         this.currentTouches[ident] = hoverElem.jsObj;
     } else if (this.currentTouches[ident] == null && hoverElem != null && 'jsObj' in hoverElem) {
         // moved from non-cell to cell
-        hoverElem.jsObj.activate();
+        hoverElem.jsObj.trigger('tdActivate');
         this.currentTouches[ident] = hoverElem.jsObj;
     } else if (this.currentTouches[ident] != null && (hoverElem == null || !('jsObj' in hoverElem))) {
         // moved from cell to non-cell
-        this.currentTouches[ident].deactivate();
+        this.currentTouches[ident].trigger('tdDeactivate');
         this.currentTouches[ident] = null;
     }
 }
@@ -66,7 +66,7 @@ TouchDrag.prototype._handleTouchUp = function (event) {
 
     if (ident in this.currentTouches && this.currentTouches[ident] != null) {
         // we have removed a finger, and it was on a cell when it lifted up
-        this.currentTouches[ident].deactivate();
+        this.currentTouches[ident].trigger('tdDeactivate');
         delete this.currentTouches[ident];
     }
 }
