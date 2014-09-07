@@ -20,7 +20,7 @@ var Grid = function(size, containerElem) {
 }
 
 Grid.prototype.createDOMRow = function(rowOfCells) {
-    var row = $('<div class="row"></div>');
+    var row = $('<div class="row" draggable="false"></div>');
     row.append(rowOfCells.map(function(c) { return c.element; }));
     return row;
 }

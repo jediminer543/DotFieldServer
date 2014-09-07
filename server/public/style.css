@@ -4,18 +4,27 @@ body {
 
 .cell {
     display: inline-block;
-    width: 50px;
-    height: 50px;
-    background-color: white;
-    border: solid 2px black;
+    width: 35px;
+    height: 35px;
+    background-color: black;
+    border: solid 1px white;
     transition: background-color 1s;
+
+    -webkit-touch-callout: none; /* disable text selection */
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -ms-touch-action: none; /* disable double-tap-to-zoom on IE */
 }
 
 .cell.active {
     transition: none;
-    background-color: purple;
+    background-color: white;
 }
 
 .row {
     line-height: 0;
+    -ms-touch-action: none; /* disable double-tap-to-zoom on IE */
 }
