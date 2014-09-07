@@ -31,7 +31,7 @@ var Grid = function(size, containerElem) {
         if ('jsObj' in hoverElem) {
             // we have touched on a cell
             currentTouches[touchEv.identifier] = hoverElem.jsObj; // save the current cell
-            hoverElem.jsObj.activated();
+            hoverElem.jsObj.activate();
         } else {
             // we have touched on a non-cell
             currentTouches[touchEv.identifier] = null;
@@ -52,16 +52,16 @@ var Grid = function(size, containerElem) {
 
         if (currentTouches[ident] != null && hoverElem != null && 'jsObj' in hoverElem && currentTouches[ident] != hoverElem.jsObj) {
             // moved from cell to different cell
-            currentTouches[ident].deactivated();
-            hoverElem.jsObj.activated();
+            currentTouches[ident].deactivate();
+            hoverElem.jsObj.activate();
             currentTouches[ident] = hoverElem.jsObj;
         } else if (currentTouches[ident] == null && hoverElem != null && 'jsObj' in hoverElem) {
             // moved from non-cell to cell
-            hoverElem.jsObj.activated();
+            hoverElem.jsObj.activate();
             currentTouches[ident] = hoverElem.jsObj;
         } else if (currentTouches[ident] != null && (hoverElem == null || !('jsObj' in hoverElem))) {
             // moved from cell to non-cell
-            currentTouches[ident].deactivated();
+            currentTouches[ident].deactivate();
             currentTouches[ident] = null;
         }
     });
@@ -72,7 +72,7 @@ var Grid = function(size, containerElem) {
 
         if (ident in currentTouches && currentTouches[ident] != null) {
             // we have removed a finger, and it was on a cell when it lifted up
-            currentTouches[ident].deactivated();
+            currentTouches[ident].deactivate();
             delete currentTouches[ident];
         }
     });
