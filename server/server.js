@@ -18,8 +18,15 @@ app.get('/', function (req, res) {
 });
 
 io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
+  socket.emit('welcome', { app: 'GravityBlocks' });
+
+  socket.on('activate', function (data) {
+    console.log('activate', data);
+    socket.broadcast.emit('activate', {x: data.x, y: data.y});
+  });
+
+  socket.on('deactivate', function (data) {
+    console.log('deactivate', data);
+    socket.broadcast.emit('deactivate', {x: data.x, y: data.y});
   });
 });

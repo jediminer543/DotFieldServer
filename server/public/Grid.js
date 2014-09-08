@@ -31,8 +31,22 @@ Grid.prototype.createDOMRow = function(rowOfCells) {
 
 Grid.prototype.cellActivated = function (cellCoord) {
     console.log('activate', cellCoord);
+    this.trigger('activate', cellCoord);
 }
 
 Grid.prototype.cellDeactivated = function (cellCoord) {
     console.log('deactivate', cellCoord);
+    this.trigger('deactivate', cellCoord);
 }
+
+Grid.prototype.activateCell = function (x, y) {
+    console.log('incoming activate', x, y);
+    this.cells[x][y].activate();
+}
+
+Grid.prototype.deactivateCell = function (x, y) {
+    console.log('incoming deactivate', x, y);
+    this.cells[x][y].deactivate();
+}
+
+MicroEvent.mixin(Grid);
