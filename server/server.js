@@ -19,20 +19,6 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-// io.on('connection', function (socket) {
-//     socket.emit('welcome', { app: 'GravityBlocks' });
-
-//     socket.on('activate', function (data) {
-//         console.log('activate', data);
-//         socket.broadcast.emit('activate', {x: data.x, y: data.y});
-//     });
-
-//     socket.on('deactivate', function (data) {
-//         console.log('deactivate', data);
-//         socket.broadcast.emit('deactivate', {x: data.x, y: data.y});
-//     });
-// });
-
 
 
 var colors = [
@@ -49,27 +35,11 @@ var colors = [
 var ConnectedClient = function (clientId, socket) {
     this.clientId = clientId;
     this.socket = socket;
-    this.handshaken = false;
     this.colorIndex = Math.floor(Math.random() * colors.length);
 
     console.log('client ' + this.clientId + ' connected');
 
-    /* Client handshaking procedure
-     * Server sends client "welcome"
-     * In response, client sends server "hello"
-     */
-    this.socket.emit('welcome', {
-        app: 'GravityBlocks',
-        id: this.clientId,
-        colors: colors,
-        colorIndex: this.colorIndex
-    });
-
-    this.socket.on('hello', function () {
-        console.log('client ' + this.clientId + ' handshaken');
-        this.handshaken = true;
-        this.initMsgReceivers();
-    }.bind(this));
+    this.initMsgReceivers();
 }
 util.inherits(ConnectedClient, EventEmitter);
 
@@ -89,8 +59,29 @@ ConnectedClient.prototype.initMsgReceivers = function () {
     }.bind(this));
 }
 
+ConnectedClient.prototype.setSocket = function (socket) {
+    this.socket.removeAllListeners();
+    this.socket = socket;
+    this.initMsgReceivers();
+}
+
 ConnectedClient.prototype.send = function (message, data) {
     this.socket.emit(message, data);
+}
+
+ConnectedClient.prototype.sendWelcome = function() {
+    /* Client handshaking procedure
+     * Client sends "join" to server, which will have either null or a client ID as data.
+     * If the client sends an ID, the server reconnects the client to an existing ConnectedClient, or
+     * If the client doesn't send an ID, the server allocates them one
+     * The server then sends the client "welcome" along with their ID and other app data
+     */
+    this.socket.emit('welcome', {
+        app: 'GravityBlocks',
+        id: this.clientId,
+        colors: colors,
+        colorIndex: this.colorIndex
+    });
 }
 
 
@@ -107,31 +98,42 @@ GravityServer.prototype.getNextClientId = function () {
 }
 
 GravityServer.prototype.onClientConnected = function (socket) {
-    var id = this.getNextClientId();
-    var clientObj = new ConnectedClient(id, socket);
+    socket.on('join', function (id) {
+        if (id == null) {
+            // This is a new client
+            id = this.getNextClientId();
+            var clientObj = new ConnectedClient(id, socket);
 
-    clientObj.on('activate', function (data) {
-        this.broadcastToClients(
-            'activate',
-            {
-                color: clientObj.colorIndex,
-                coords: data.coords
-            },
-            clientObj.clientId
-        );
+            clientObj.on('activate', function (data) {
+                this.broadcastToClients(
+                    'activate',
+                    {
+                        color: clientObj.colorIndex,
+                        coords: data.coords
+                    },
+                    clientObj.clientId
+                );
+            }.bind(this));
+
+            clientObj.on('deactivate', function (data) {
+                this.broadcastToClients(
+                    'deactivate',
+                    {
+                        coords: data.coords
+                    },
+                    clientObj.clientId
+                );
+            }.bind(this));
+
+            this.clients[id] = clientObj;
+        } else {
+            // This client has been connected before, and is reconnecting
+            console.log('client ' + id + ' reconnected');
+            this.clients[id].setSocket(socket);
+        }
+
+        this.clients[id].sendWelcome();
     }.bind(this));
-
-    clientObj.on('deactivate', function (data) {
-        this.broadcastToClients(
-            'deactivate',
-            {
-                coords: data.coords
-            },
-            clientObj.clientId
-        );
-    }.bind(this));
-
-    this.clients[id] = clientObj;
 }
 
 GravityServer.prototype.broadcastToClients = function (message, data, exceptClientId) {

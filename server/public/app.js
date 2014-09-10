@@ -14,35 +14,34 @@ $(function() {
     var colors = null;
     var myColorIndex = null;
 
-    var socket = io.connect('http://172.31.27.102');
+    var socket = io.connect('http://192.168.0.11');
     socket.on('connect', function() {
         console.log('connected');
 
-        if (id) return; // if we have already handshaken with the server, don't set up the event handlers and stuff again
+        // If we have connected before (so we're reconnecting), id WON'T be null
+        socket.emit('join', id);
+    });
 
-        socket.once('welcome', function (data) {
-            console.log('welcome received');
+    socket.on('welcome', function (data) {
+        console.log('welcome received');
 
-            if (data.app !== 'GravityBlocks') {
-                alert('Connected to unknown server');
-                return;
-            }
+        if (data.app !== 'GravityBlocks') {
+            alert('Connected to unknown server');
+            return;
+        }
 
-            socket.emit('hello');
+        id = data.id;
+        colors = data.colors;
+        myColorIndex = data.colorIndex;
+        alert('your colour index is ' + data.colorIndex);
 
-            id = data.id;
-            colors = data.colors;
-            myColorIndex = data.colorIndex;
-            alert('your colour index is ' + data.colorIndex);
+        socket.removeAllListeners('activate').on('activate', function (data) {
+            console.log('color ' + data.color);
+            grid.activateCell(data.coords.x, data.coords.y);
+        });
 
-            socket.on('activate', function (data) {
-                console.log('color ' + data.color);
-                grid.activateCell(data.coords.x, data.coords.y);
-            });
-
-            socket.on('deactivate', function (data) {
-                grid.deactivateCell(data.coords.x, data.coords.y);
-            });
+        socket.removeAllListeners('deactivate').on('deactivate', function (data) {
+            grid.deactivateCell(data.coords.x, data.coords.y);
         });
     });
 });
