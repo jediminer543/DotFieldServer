@@ -44,4 +44,9 @@ $(function() {
             grid.deactivateCell(data.coords.x, data.coords.y);
         });
     });
+
+    socket.on('restart', function() {
+        // The server is telling us that the server has restarted, so we should reload the page
+        window.location.reload();
+    });
 });

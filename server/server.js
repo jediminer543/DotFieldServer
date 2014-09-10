@@ -87,14 +87,21 @@ ConnectedClient.prototype.sendWelcome = function() {
 
 
 var GravityServer = function (io) {
-    this.clients = [];
-    this.nextClientId = 1;
+    this.clients = {};
+    this.burnedClientIds = [];
 
     io.on('connection', this.onClientConnected.bind(this));
 }
 
 GravityServer.prototype.getNextClientId = function () {
-    return this.nextClientId++;
+    var randomStr = null;
+    do {
+        randomStr = (+new Date * Math.random()).toString(36).replace('.', '')
+    } while (this.burnedClientIds.indexOf(randomStr) > -1);
+
+    this.burnedClientIds.push(randomStr);
+
+    return randomStr;
 }
 
 GravityServer.prototype.onClientConnected = function (socket) {
@@ -127,9 +134,17 @@ GravityServer.prototype.onClientConnected = function (socket) {
 
             this.clients[id] = clientObj;
         } else {
-            // This client has been connected before, and is reconnecting
-            console.log('client ' + id + ' reconnected');
-            this.clients[id].setSocket(socket);
+            // This client says it has been connected before, and is reconnecting
+            // The server may have been restarted, so check that the client exists before blindly reconnecting them
+            if (id in this.clients) {
+                console.log('client ' + id + ' reconnected');
+                this.clients[id].setSocket(socket);
+            } else {
+                // This client hasn't been seen before, so the server has probably been restarted.
+                // Tell the client to reload the page
+                socket.emit('restart');
+                return;
+            }
         }
 
         this.clients[id].sendWelcome();
@@ -138,11 +153,12 @@ GravityServer.prototype.onClientConnected = function (socket) {
 
 GravityServer.prototype.broadcastToClients = function (message, data, exceptClientId) {
     exceptClientId = exceptClientId || -1;
-    this.clients.forEach(function (client) {
+    Object.keys(this.clients).forEach(function (clientId) {
+        var client = this.clients[clientId];
         if (client.clientId == exceptClientId) return;
 
         client.send(message, data);
-    });
+    }.bind(this));
 }
 
 
