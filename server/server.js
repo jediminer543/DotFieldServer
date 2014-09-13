@@ -5,6 +5,8 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
+var config = require('../config.json');
+
 var WEB_PORT = 47284;
 
 app.set('view engine', 'ejs');
@@ -16,7 +18,7 @@ server.listen(app.get('port'), function() {
 });
 
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/index.html');
+    res.render('index', {config: config});
 });
 
 
