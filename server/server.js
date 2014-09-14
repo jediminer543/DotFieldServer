@@ -178,7 +178,8 @@ var CubeClientManager = function(config) {
             console.log('Cube client connected');
 
             ews.send('welcome', {
-                app: 'GravityBlocks'
+                app: 'GravityBlocks',
+                colors: colors
             });
 
             this.connectedCubes.push(ews);

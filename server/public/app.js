@@ -35,6 +35,8 @@ $(function() {
         myColorIndex = data.colorIndex;
         myColor = colors[myColorIndex];
 
+        console.log('Allocated colour index ' + myColorIndex + ' %cpreview', 'color: rgb(' + myColor[0] + ', ' + myColor[1] + ', ' + myColor[2] + ')');
+
         socket.removeAllListeners('activate').on('activate', function (data) {
             console.log('color ' + data.color);
             grid.activateCell(data.coords.x, data.coords.y);
