@@ -192,8 +192,17 @@ var CubeClientManager = function(config) {
  */
 CubeClientManager.prototype.sendToCubes = function (event, data) {
     this.connectedCubes.forEach(function (cubeEws) {
-        cubeEws.send(event, data);
-    });
+        cubeEws.send(event, data, function (err) {
+            if (err) {
+                // It doesn't matter what the error is, it'll be bad news regardless, so bin this client
+                var idx = this.connectedCubes.indexOf(cubeEws);
+                if (idx !== -1) {
+                    this.connectedCubes.splice(idx, 1);
+                    console.log('Cube client connection terminated due to error', err);
+                }
+            }
+        }.bind(this));
+    }.bind(this));
 }
 
 

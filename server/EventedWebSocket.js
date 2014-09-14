@@ -19,12 +19,18 @@ var EventedWebSocket = function (ws) {
 util.inherits(EventedWebSocket, EventEmitter);
 
 // Emit an "event" through the Websocket connection
-EventedWebSocket.prototype.send = function (event, data) {
+EventedWebSocket.prototype.send = function (event, data, callback /* error */) {
     if (typeof data === 'undefined') {
-        this.ws.send(event);
+        var dataToSend = event;
     } else {
-        this.ws.send(event + '|' + JSON.stringify(data));
+        var dataToSend = event + '|' + JSON.stringify(data);
     }
+
+    this.ws.send(dataToSend, function (err) {
+        if (callback) {
+            callback(err || null);
+        }
+    });
 }
 
 
