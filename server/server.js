@@ -40,6 +40,7 @@ var ConnectedClient = function (clientId, socket) {
     this.clientId = clientId;
     this.socket = socket;
     this.colorIndex = Math.floor(Math.random() * colors.length);
+    this.selectedFace = 'front';
 
     console.log('client ' + this.clientId + ' connected');
 
@@ -60,6 +61,12 @@ ConnectedClient.prototype.initMsgReceivers = function () {
             id: this.clientId,
             coords: coords
         });
+    }.bind(this));
+
+    this.socket.on('faceselect', function (face) {
+        if (['top', 'front', 'left', 'right', 'back', 'bottom'].indexOf(face) !== -1) {
+            this.selectedFace = face;
+        }
     }.bind(this));
 }
 
@@ -84,7 +91,8 @@ ConnectedClient.prototype.sendWelcome = function() {
         app: 'GravityBlocks',
         id: this.clientId,
         colors: colors,
-        colorIndex: this.colorIndex
+        colorIndex: this.colorIndex,
+        face: this.selectedFace
     });
 }
 
@@ -121,7 +129,11 @@ GravityServer.prototype.onClientConnected = function (socket) {
                     color: clientObj.colorIndex,
                     coords: data.coords
                 };
-                this.broadcastToClients('activate', payload, clientObj.clientId);
+                var broadcastFilter = {
+                    exceptClientId: clientObj.clientId,
+                    face: clientObj.selectedFace
+                };
+                this.broadcastToClients('activate', payload, broadcastFilter);
                 this.cubeManager.sendToCubes('activate', payload);
             }.bind(this));
 
@@ -129,7 +141,11 @@ GravityServer.prototype.onClientConnected = function (socket) {
                 var payload = {
                     coords: data.coords
                 };
-                this.broadcastToClients('deactivate', payload, clientObj.clientId);
+                var broadcastFilter = {
+                    exceptClientId: clientObj.clientId,
+                    face: clientObj.selectedFace
+                };
+                this.broadcastToClients('deactivate', payload, broadcastFilter);
                 this.cubeManager.sendToCubes('deactivate', payload);
             }.bind(this));
 
@@ -152,11 +168,17 @@ GravityServer.prototype.onClientConnected = function (socket) {
     }.bind(this));
 }
 
-GravityServer.prototype.broadcastToClients = function (message, data, exceptClientId) {
-    exceptClientId = exceptClientId || -1;
+GravityServer.prototype.broadcastToClients = function (message, data, filter) {
+    filter = filter || {};
+
     Object.keys(this.clients).forEach(function (clientId) {
         var client = this.clients[clientId];
-        if (client.clientId == exceptClientId) return;
+
+        // Filter out a specific client
+        if (filter.hasOwnProperty('exceptClientId') && client.clientId == filter.exceptClientId) return;
+
+        // Filter clients on a specific face only
+        if (filter.hasOwnProperty('face') && client.selectedFace != filter.face) return;
 
         client.send(message, data);
     }.bind(this));

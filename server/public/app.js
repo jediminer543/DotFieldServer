@@ -45,10 +45,28 @@ $(function() {
         socket.removeAllListeners('deactivate').on('deactivate', function (data) {
             grid.deactivateCell(data.coords.x, data.coords.y);
         });
+
+        $('.face-select').prop('disabled', false);
+
+        showSelectedFace(data.face);
     });
 
     socket.on('restart', function() {
         // The server is telling us that the server has restarted, so we should reload the page
         window.location.reload();
     });
+
+
+    // Setup controls
+    $('.face-select').bind('click', function() {
+        var selectedFace = $(this).attr('data-face');
+        socket.emit('faceselect', selectedFace);
+
+        showSelectedFace(selectedFace);
+    });
+
+    function showSelectedFace(face) {
+        $('.face-select').removeClass('selected');
+        $('.face-select[data-face=' + face + ']').addClass('selected');
+    }
 });
