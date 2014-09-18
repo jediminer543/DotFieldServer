@@ -2,10 +2,12 @@ $(function() {
     var grid = new Grid(8, $('#gridContainer'));
 
     grid.bind('activate', function (coord) {
+        console.log('activate', coord);
         socket.emit('activate', coord);
     });
 
     grid.bind('deactivate', function (coord) {
+        console.log('deactivate', coord);
         socket.emit('deactivate', coord);
     });
 
@@ -39,11 +41,11 @@ $(function() {
 
         socket.removeAllListeners('activate').on('activate', function (data) {
             console.log('color ' + data.color);
-            grid.activateCell(data.coords.x, data.coords.y);
+            grid.activateCell(data.coords.y, data.coords.x);
         });
 
         socket.removeAllListeners('deactivate').on('deactivate', function (data) {
-            grid.deactivateCell(data.coords.x, data.coords.y);
+            grid.deactivateCell(data.coords.y, data.coords.x);
         });
 
         $('.face-select').prop('disabled', false);

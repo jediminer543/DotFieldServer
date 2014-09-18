@@ -3,12 +3,12 @@ var Grid = function(size, containerElem) {
     this.container = containerElem; // the DOM element that will contain the grid
     this.cells = [];
 
-    for (x=0; x<this.size; x++) {
-        this.cells[x] = [];
-        for (y=0; y<this.size; y++) {
-            this.cells[x][y] = new Cell(x, y);
-            this.cells[x][y].bind('activate', this.cellActivated.bind(this));
-            this.cells[x][y].bind('deactivate', this.cellDeactivated.bind(this));
+    for (row=0; row<this.size; row++) {
+        this.cells[row] = [];
+        for (col=0; col<this.size; col++) {
+            this.cells[row][col] = new Cell(row, col);
+            this.cells[row][col].bind('activate', this.cellActivated.bind(this));
+            this.cells[row][col].bind('deactivate', this.cellDeactivated.bind(this));
         }
     }
 
@@ -20,7 +20,7 @@ var Grid = function(size, containerElem) {
     this.container.append(this.domGrid);
 
     // Handle touch events to emulate touchEnter or touchLeave behaviour
-    new TouchDrag(document.body);
+    new TouchDrag($('#gridContainer').get(0));
 }
 
 Grid.prototype.createDOMRow = function(rowOfCells) {
@@ -37,14 +37,14 @@ Grid.prototype.cellDeactivated = function (cellCoord) {
     this.trigger('deactivate', cellCoord);
 }
 
-Grid.prototype.activateCell = function (x, y) {
-    console.log('incoming activate', x, y);
-    this.cells[x][y].activate();
+Grid.prototype.activateCell = function (row, col) {
+    console.log('incoming activate (row/col)', row, col);
+    this.cells[row][col].activate();
 }
 
-Grid.prototype.deactivateCell = function (x, y) {
-    console.log('incoming deactivate', x, y);
-    this.cells[x][y].deactivate();
+Grid.prototype.deactivateCell = function (row, col) {
+    console.log('incoming deactivate (row/col)', row, col);
+    this.cells[row][col].deactivate();
 }
 
 MicroEvent.mixin(Grid);

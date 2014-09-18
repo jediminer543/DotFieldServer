@@ -1,5 +1,5 @@
-var Cell = function(x, y) {
-    this.coord = {x: x, y: y};
+var Cell = function(row, col) {
+    this.coord = {x: col, y: row};
     this.active = false; // is the cell currently being touched?
     this.element = $('<div class="cell" draggable="false"></div>');
     this.element.get(0).jsObj = this; // a bit hacky but it allows us to get a reference to the Cell from the DOM elem

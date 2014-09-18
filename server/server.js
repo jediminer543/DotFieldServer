@@ -127,7 +127,8 @@ GravityServer.prototype.onClientConnected = function (socket) {
             clientObj.on('activate', function (data) {
                 var payload = {
                     color: clientObj.colorIndex,
-                    coords: data.coords
+                    coords: data.coords,
+                    face: clientObj.selectedFace
                 };
                 var broadcastFilter = {
                     exceptClientId: clientObj.clientId,
@@ -139,7 +140,8 @@ GravityServer.prototype.onClientConnected = function (socket) {
 
             clientObj.on('deactivate', function (data) {
                 var payload = {
-                    coords: data.coords
+                    coords: data.coords,
+                    face: clientObj.selectedFace
                 };
                 var broadcastFilter = {
                     exceptClientId: clientObj.clientId,
