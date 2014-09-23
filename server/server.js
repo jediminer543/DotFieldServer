@@ -191,6 +191,7 @@ GravityServer.prototype.broadcastToClients = function (message, data, filter) {
 
 var CubeClientManager = function(config) {
     this.wss = new WebSocketServer({port: config.listenCubePort});
+    console.log('Listening for Python pattern connection on port %d', config.listenCubePort);
 
     this.connectedCubes = [];
 
