@@ -7,7 +7,7 @@ var io = require('socket.io')(server);
 var WebSocketServer = require('ws').Server;
 var EventedWebSocket = require('./EventedWebSocket');
 
-var config = require('../config.json');
+var config = require(__dirname + '/../config.json');
 
 app.set('view engine', 'ejs');
 app.set('port', process.env.PORT || config.listenWebPort);
