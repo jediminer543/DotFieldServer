@@ -16,7 +16,7 @@ $(function() {
     var myColorIndex = null;
     var myColor = null;
 
-    var socket = io.connect('http://' + config.server);
+    var socket = io.connect('http://' + config.listenIp);
     socket.on('connect', function() {
         console.log('Connected to server');
 

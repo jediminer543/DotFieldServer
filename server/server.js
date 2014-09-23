@@ -9,10 +9,8 @@ var EventedWebSocket = require('./EventedWebSocket');
 
 var config = require('../config.json');
 
-var WEB_PORT = 47284;
-
 app.set('view engine', 'ejs');
-app.set('port', process.env.PORT || WEB_PORT);
+app.set('port', process.env.PORT || config.listenWebPort);
 app.use(express.static(__dirname + '/public'));
 
 server.listen(app.get('port'), function() {
@@ -192,7 +190,7 @@ GravityServer.prototype.broadcastToClients = function (message, data, filter) {
 
 
 var CubeClientManager = function(config) {
-    this.wss = new WebSocketServer({port: config.cubeClientPort});
+    this.wss = new WebSocketServer({port: config.listenCubePort});
 
     this.connectedCubes = [];
 
