@@ -38,7 +38,10 @@ var colors = [
 var ConnectedClient = function (clientId, socket) {
     this.clientId = clientId;
     this.socket = socket;
-    this.colorIndex = Math.floor(Math.random() * colors.length);
+    this.startColorIndex = Math.floor(Math.random() * colors.length);
+    do {
+        this.endColorIndex = Math.floor(Math.random() * colors.length);
+    } while (this.startColorIndex == this.endColorIndex);
     this.selectedFace = 'front';
 
     console.log('client ' + this.clientId + ' connected');
@@ -90,7 +93,8 @@ ConnectedClient.prototype.sendWelcome = function() {
         app: 'DotField',
         id: this.clientId,
         colors: colors,
-        colorIndex: this.colorIndex,
+        startColorIndex: this.startColorIndex,
+        endColorIndex: this.endColorIndex,
         face: this.selectedFace
     });
 }
@@ -124,8 +128,14 @@ DotFieldServer.prototype.onClientConnected = function (socket) {
             var clientObj = new ConnectedClient(id, socket);
 
             clientObj.on('activate', function (data) {
-                var payload = {
-                    color: clientObj.colorIndex,
+                var clientPayload = {
+                    color: clientObj.startColorIndex,
+                    coords: data.coords,
+                    face: clientObj.selectedFace
+                };
+                var cubePayload = {
+                    startColorIndex: clientObj.startColorIndex,
+                    endColorIndex: clientObj.endColorIndex,
                     coords: data.coords,
                     face: clientObj.selectedFace
                 };
@@ -133,8 +143,8 @@ DotFieldServer.prototype.onClientConnected = function (socket) {
                     exceptClientId: clientObj.clientId,
                     face: clientObj.selectedFace
                 };
-                this.broadcastToClients('activate', payload, broadcastFilter);
-                this.cubeManager.sendToCubes('activate', payload);
+                this.broadcastToClients('activate', clientPayload, broadcastFilter);
+                this.cubeManager.sendToCubes('activate', cubePayload);
             }.bind(this));
 
             clientObj.on('deactivate', function (data) {

@@ -13,7 +13,8 @@ $(function() {
 
     var id = null;
     var colors = null;
-    var myColorIndex = null;
+    var startColorIndex = null;
+    var endColorIndex = null;
     var myColor = null;
 
     var socket = io.connect('http://' + config.listenIp);
@@ -34,10 +35,11 @@ $(function() {
 
         id = data.id;
         colors = data.colors;
-        myColorIndex = data.colorIndex;
-        myColor = colors[myColorIndex];
+        startColorIndex = data.startColorIndex;
+        endColorIndex = data.endColorIndex;
+        startColor = colors[startColorIndex];
 
-        console.log('Allocated colour index ' + myColorIndex + ' %cpreview', 'color: rgb(' + myColor[0] + ', ' + myColor[1] + ', ' + myColor[2] + ')');
+        console.log('Allocated colour indexes ' + startColorIndex + ',' + endColorIndex + ' %cstart preview', 'color: rgb(' + startColor[0] + ', ' + startColor[1] + ', ' + startColor[2] + ')');
 
         socket.removeAllListeners('activate').on('activate', function (data) {
             console.log('color ' + data.color);
