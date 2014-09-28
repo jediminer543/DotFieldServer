@@ -39,7 +39,7 @@ $(function() {
         endColorIndex = data.endColorIndex;
         startColor = colors[startColorIndex];
 
-        console.log('Allocated colour indexes ' + startColorIndex + ',' + endColorIndex + ' %cstart preview', 'color: rgb(' + startColor[0] + ', ' + startColor[1] + ', ' + startColor[2] + ')');
+        console.log('Allocated colour indexes ' + startColorIndex + ',' + endColorIndex + ' %cstart preview', 'color: ' + colorToCSS(startColor));
 
         socket.removeAllListeners('activate').on('activate', function (data) {
             console.log('color ' + data.color);
@@ -49,6 +49,33 @@ $(function() {
         socket.removeAllListeners('deactivate').on('deactivate', function (data) {
             grid.deactivateCell(data.coords.y, data.coords.x);
         });
+
+        // Create colour selector buttons
+        for (var colorIndex=0; colorIndex < colors.length; colorIndex++) {
+            var startButton = $('<button>');
+            startButton.attr('data-colorindex', colorIndex)
+            startButton.css('background-color', colorToCSS(colors[colorIndex]));
+            startButton.addClass('color-select');
+            startButton.addClass('start-color');
+
+            if (colorIndex == startColorIndex) {
+                startButton.addClass('selected');
+            }
+
+            $('#start-color-selector').append(startButton);
+
+            var endButton = $('<button>');
+            endButton.attr('data-colorindex', colorIndex)
+            endButton.css('background-color', colorToCSS(colors[colorIndex]));
+            endButton.addClass('color-select');
+            endButton.addClass('end-color');
+
+            if (colorIndex == endColorIndex) {
+                endButton.addClass('selected');
+            }
+
+            $('#end-color-selector').append(endButton);
+        }
 
         $('.face-select').prop('disabled', false);
 
@@ -62,15 +89,39 @@ $(function() {
 
 
     // Setup controls
-    $('.face-select').bind('click', function() {
+    $('#controls').on('click', '.face-select', function() {
         var selectedFace = $(this).attr('data-face');
         socket.emit('faceselect', selectedFace);
 
         showSelectedFace(selectedFace);
     });
 
+    $('#controls').on('click', '.color-select', function() {
+        var selectedColor = parseInt($(this).attr('data-colorindex'), 10);
+        var isStartColor = $(this).hasClass('start-color');
+
+        var socketPayload = {
+            isStartColor: isStartColor,
+            colorIndex: selectedColor
+        };
+        socket.emit('colorselect', socketPayload);
+
+        showSelectedColor(isStartColor, selectedColor);
+    });
+
     function showSelectedFace(face) {
         $('.face-select').removeClass('selected');
         $('.face-select[data-face=' + face + ']').addClass('selected');
+    }
+
+    function showSelectedColor(isStartColor, selectedColor) {
+        var classPrefix = isStartColor ? 'start' : 'end';
+
+        $('.' + classPrefix + '-color').removeClass('selected');
+        $('.' + classPrefix + '-color[data-colorindex=' + selectedColor + ']').addClass('selected');
+    }
+
+    function colorToCSS(colorArray) {
+        return 'rgb(' + colorArray[0] + ', ' + colorArray[1] + ', ' + colorArray[2] + ')';
     }
 });

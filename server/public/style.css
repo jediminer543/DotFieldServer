@@ -55,6 +55,16 @@ body {
 }
 
 .face-select.selected {
-    background-color: red;
-    color: white;
+    border: solid 4px red;
+}
+
+.color-select {
+    border: solid 4px black;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+}
+
+.color-select.selected {
+    border-color: red;
 }

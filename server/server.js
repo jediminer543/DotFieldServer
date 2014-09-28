@@ -70,6 +70,14 @@ ConnectedClient.prototype.initMsgReceivers = function () {
             this.selectedFace = face;
         }
     }.bind(this));
+
+    this.socket.on('colorselect', function (data) {
+        if (data.isStartColor) {
+            this.startColorIndex = data.colorIndex;
+        } else {
+            this.endColorIndex = data.colorIndex;
+        }
+    }.bind(this));
 }
 
 ConnectedClient.prototype.setSocket = function (socket) {
