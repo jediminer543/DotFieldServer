@@ -87,7 +87,7 @@ ConnectedClient.prototype.sendWelcome = function() {
      * The server then sends the client "welcome" along with their ID and other app data
      */
     this.socket.emit('welcome', {
-        app: 'GravityBlocks',
+        app: 'DotField',
         id: this.clientId,
         colors: colors,
         colorIndex: this.colorIndex,
@@ -97,7 +97,7 @@ ConnectedClient.prototype.sendWelcome = function() {
 
 
 
-var GravityServer = function (io, cubeManager) {
+var DotFieldServer = function (io, cubeManager) {
     this.clients = {};
     this.burnedClientIds = [];
     this.cubeManager = cubeManager; // used to communicate with connected cube(s)
@@ -105,7 +105,7 @@ var GravityServer = function (io, cubeManager) {
     io.on('connection', this.onClientConnected.bind(this));
 }
 
-GravityServer.prototype.getNextClientId = function () {
+DotFieldServer.prototype.getNextClientId = function () {
     var randomStr = null;
     do {
         randomStr = (+new Date * Math.random()).toString(36).replace('.', '')
@@ -116,7 +116,7 @@ GravityServer.prototype.getNextClientId = function () {
     return randomStr;
 }
 
-GravityServer.prototype.onClientConnected = function (socket) {
+DotFieldServer.prototype.onClientConnected = function (socket) {
     socket.on('join', function (id) {
         if (id == null) {
             // This is a new client
@@ -169,7 +169,7 @@ GravityServer.prototype.onClientConnected = function (socket) {
     }.bind(this));
 }
 
-GravityServer.prototype.broadcastToClients = function (message, data, filter) {
+DotFieldServer.prototype.broadcastToClients = function (message, data, filter) {
     filter = filter || {};
 
     Object.keys(this.clients).forEach(function (clientId) {
@@ -202,7 +202,7 @@ var CubeClientManager = function(config) {
             console.log('Cube client connected');
 
             ews.send('welcome', {
-                app: 'GravityBlocks',
+                app: 'DotField',
                 colors: colors
             });
 
@@ -237,5 +237,5 @@ CubeClientManager.prototype.sendToCubes = function (event, data) {
 
 
 var cubeManager = new CubeClientManager(config);
-var gServer = new GravityServer(io, cubeManager);
+var dfServer = new DotFieldServer(io, cubeManager);
 

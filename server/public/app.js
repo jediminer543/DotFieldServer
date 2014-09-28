@@ -27,7 +27,7 @@ $(function() {
     socket.on('welcome', function (data) {
         console.log('Welcome received', data);
 
-        if (data.app !== 'GravityBlocks') {
+        if (data.app !== 'DotField') {
             alert('Connected to unknown server');
             return;
         }
