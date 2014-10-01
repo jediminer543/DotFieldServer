@@ -29,10 +29,10 @@ var colors = [
     [255, 0, 0], // red
     [0, 255, 0], // green
     [0, 0, 255], // blue
-    [255, 255, 0], // yellow
+    [255, 220, 0], // yellow - has a reduced amount of green to remove green tint
     [255, 0, 255], // pink
     [0, 255, 255], // cyan
-    [255, 153, 0], // orange
+    [255, 90, 0], // orange - has a reduced amount of green to make less yellowy
 ];
 
 var ConnectedClient = function (clientId, socket) {
