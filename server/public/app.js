@@ -51,6 +51,9 @@ $(function() {
         });
 
         // Create colour selector buttons
+        $('#start-color-selector').empty();
+        $('#end-color-selector').empty();
+        
         for (var colorIndex=0; colorIndex < colors.length; colorIndex++) {
             var startButton = $('<button>');
             startButton.attr('data-colorindex', colorIndex)
