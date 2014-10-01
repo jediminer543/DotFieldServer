@@ -25,7 +25,7 @@ app.get('/', function (req, res) {
 
 
 var colors = [
-    [255, 255, 255], // white
+    // [255, 255, 255], // white
     [255, 0, 0], // red
     [0, 255, 0], // green
     [0, 0, 255], // blue
