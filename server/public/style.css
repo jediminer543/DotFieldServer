@@ -3,10 +3,18 @@ body {
     color: white;
 }
 
+#gridContainer {
+    /* 8 x max-width of .cell. Without this contraint here, the
+    width of the cells would be constrained, but the height would not. */
+    max-width: 640px;
+}
+
 .cell {
     display: inline-block;
-    width: 35px;
-    height: 35px;
+    width: 12%;
+    max-width: 80px;
+    height: 0;
+    padding-bottom: 12%; /* hack to constrain the cells to being square. Padding % is based on width, not height */
     background-color: black;
     border-left: solid 1px white;
     border-top: solid 1px white;
