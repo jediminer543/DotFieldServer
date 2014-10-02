@@ -3,12 +3,13 @@ $(function() {
 
     grid.bind('activate', function (coord) {
         console.log('activate', coord);
-        socket.emit('activate', coord);
-    });
-
-    grid.bind('deactivate', function (coord) {
-        console.log('deactivate', coord);
-        socket.emit('deactivate', coord);
+        if (!nyanMode) {
+            console.log('activating');
+            socket.emit('activate', coord);
+        } else {
+            console.log('nyanning');
+            socket.emit('nyan', coord);
+        }
     });
 
     var id = null;
@@ -16,6 +17,9 @@ $(function() {
     var startColorIndex = null;
     var endColorIndex = null;
     var myColor = null;
+
+    // When nyan mode is on, touches are sent as nyan creation messages rather than standard activations
+    var nyanMode = false;
 
     var socket = io.connect('http://' + config.listenIp);
     socket.on('connect', function() {
@@ -53,7 +57,7 @@ $(function() {
         // Create colour selector buttons
         $('#start-color-selector').empty();
         $('#end-color-selector').empty();
-        
+
         for (var colorIndex=0; colorIndex < colors.length; colorIndex++) {
             var startButton = $('<button>');
             startButton.attr('data-colorindex', colorIndex)
@@ -99,6 +103,7 @@ $(function() {
         showSelectedFace(selectedFace);
     });
 
+    var nyanActivationCounter = 0;
     $('#controls').on('click', '.color-select', function() {
         var selectedColor = parseInt($(this).attr('data-colorindex'), 10);
         var isStartColor = $(this).hasClass('start-color');
@@ -110,7 +115,25 @@ $(function() {
         socket.emit('colorselect', socketPayload);
 
         showSelectedColor(isStartColor, selectedColor);
+
+        if (selectedColor == 2) {
+            nyanActivationCounter++;
+        } else {
+            nyanActivationCounter = 0;
+        }
+
+        if (nyanActivationCounter == 10) {
+            showNyanModeSelector();
+        }
     });
+
+    $('#controls').on('click', '.nyan-select', function() {
+        if ($(this).attr('data-nyan-mode') == 'on') {
+            nyanMode = true;
+        } else {
+            nyanMode = false;
+        }
+    })
 
     function showSelectedFace(face) {
         $('.face-select').removeClass('selected');
@@ -122,6 +145,10 @@ $(function() {
 
         $('.' + classPrefix + '-color').removeClass('selected');
         $('.' + classPrefix + '-color[data-colorindex=' + selectedColor + ']').addClass('selected');
+    }
+
+    function showNyanModeSelector() {
+        $('#nyan-mode-select').show();
     }
 
     function colorToCSS(colorArray) {

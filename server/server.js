@@ -65,6 +65,13 @@ ConnectedClient.prototype.initMsgReceivers = function () {
         });
     }.bind(this));
 
+    this.socket.on('nyan', function (coords) {
+        this.emit('nyan', {
+            id: this.clientId,
+            coords: coords
+        });
+    }.bind(this));
+
     this.socket.on('faceselect', function (face) {
         if (['top', 'front', 'left', 'right', 'back', 'bottom'].indexOf(face) !== -1) {
             this.selectedFace = face;
@@ -155,17 +162,12 @@ DotFieldServer.prototype.onClientConnected = function (socket) {
                 this.cubeManager.sendToCubes('activate', cubePayload);
             }.bind(this));
 
-            clientObj.on('deactivate', function (data) {
-                var payload = {
+            clientObj.on('nyan', function (data) {
+                var cubePayload = {
                     coords: data.coords,
                     face: clientObj.selectedFace
                 };
-                var broadcastFilter = {
-                    exceptClientId: clientObj.clientId,
-                    face: clientObj.selectedFace
-                };
-                this.broadcastToClients('deactivate', payload, broadcastFilter);
-                this.cubeManager.sendToCubes('deactivate', payload);
+                this.cubeManager.sendToCubes('nyan', cubePayload);
             }.bind(this));
 
             this.clients[id] = clientObj;
