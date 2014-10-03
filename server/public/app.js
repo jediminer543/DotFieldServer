@@ -12,6 +12,10 @@ $(function() {
         }
     });
 
+    grid.bind('deactivate', function (coord) {
+        socket.emit('deactivate', coord);
+    });
+
     var id = null;
     var colors = null;
     var startColorIndex = null;

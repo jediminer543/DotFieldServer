@@ -162,6 +162,19 @@ DotFieldServer.prototype.onClientConnected = function (socket) {
                 this.cubeManager.sendToCubes('activate', cubePayload);
             }.bind(this));
 
+            clientObj.on('deactivate', function (data) {
+                var payload = {
+                    coords: data.coords,
+                    face: clientObj.selectedFace
+                };
+                var broadcastFilter = {
+                    exceptClientId: clientObj.clientId,
+                    face: clientObj.selectedFace
+                };
+                this.broadcastToClients('deactivate', payload, broadcastFilter);
+                this.cubeManager.sendToCubes('deactivate', payload);
+            }.bind(this));
+
             clientObj.on('nyan', function (data) {
                 var cubePayload = {
                     coords: data.coords,
