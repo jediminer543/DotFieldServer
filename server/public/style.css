@@ -3,6 +3,10 @@ body {
     color: white;
 }
 
+#container {
+    background-color: black; /* this is required because when this element is made fullscreen, WebKit by default gives it a white background */
+}
+
 #gridContainer {
     /* 8 x max-width of .cell. Without this contraint here, the
     width of the cells would be constrained, but the height would not. */

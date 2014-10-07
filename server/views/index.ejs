@@ -2,7 +2,8 @@
 <html>
 <head>
     <link rel="stylesheet" href="/style.css"></style>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=350px, user-scalable=no">
+    <title>DotField Controller</title>
     <script type="text/javascript">
     var config = {
         listenIp: "<%= config.listenIp %>"
@@ -17,21 +18,26 @@
     <script src="/app.js"></script>
 </head>
 <body draggable="false">
-<div id="gridContainer" draggable="false"></div>
-<div id="controls">
-    <div id="face-selector">
-        <button class="face-select text-button-select" data-face="top" disabled="disabled">Top</button>
-        <button class="face-select text-button-select" data-face="front" disabled="disabled">Front</button>
-        <button class="face-select text-button-select" data-face="left" disabled="disabled">Left</button>
-        <button class="face-select text-button-select" data-face="right" disabled="disabled">Right</button>
-        <button class="face-select text-button-select" data-face="back" disabled="disabled">Back</button>
-        <button class="face-select text-button-select" data-face="bottom" disabled="disabled">Bottom</button>
-    </div>
-    <div id="start-color-selector"></div>
-    <div id="end-color-selector"></div>
-    <div id="nyan-mode-select">
-        <button class="nyan-select text-button-select" data-nyan-mode="off">Normal</button>
-        <button class="nyan-select text-button-select" data-nyan-mode="on">Nyan</button>
+<div id="container">
+    <div id="gridContainer" draggable="false"></div>
+    <div id="controls">
+        <div id="face-selector">
+            <button class="face-select text-button-select" data-face="top" disabled="disabled">Top</button>
+            <button class="face-select text-button-select" data-face="front" disabled="disabled">Front</button>
+            <button class="face-select text-button-select" data-face="left" disabled="disabled">Left</button>
+            <button class="face-select text-button-select" data-face="right" disabled="disabled">Right</button>
+            <button class="face-select text-button-select" data-face="back" disabled="disabled">Back</button>
+            <button class="face-select text-button-select" data-face="bottom" disabled="disabled">Bottom</button>
+        </div>
+        <div id="start-color-selector"></div>
+        <div id="end-color-selector"></div>
+        <div id="nyan-mode-select">
+            <button class="nyan-select text-button-select" data-nyan-mode="off">Normal</button>
+            <button class="nyan-select text-button-select" data-nyan-mode="on">Nyan</button>
+        </div>
+        <div>
+            <button class="text-button-select" id="enable-fullscreen" style="display: none">Go Fullscreen</button>
+        </div>
     </div>
 </div>
 </body>

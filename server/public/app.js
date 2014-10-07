@@ -137,7 +137,26 @@ $(function() {
         } else {
             nyanMode = false;
         }
-    })
+    });
+
+    if (document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled) {
+        $('#enable-fullscreen').show();
+    }
+
+    $('#enable-fullscreen').on('click', function() {
+        var i = document.getElementById('container');
+ 
+        // go full-screen
+        if (i.requestFullscreen) {
+            i.requestFullscreen();
+        } else if (i.webkitRequestFullscreen) {
+            i.webkitRequestFullscreen();
+        } else if (i.mozRequestFullScreen) {
+            i.mozRequestFullScreen();
+        } else if (i.msRequestFullscreen) {
+            i.msRequestFullscreen();
+        }
+    });
 
     function showSelectedFace(face) {
         $('.face-select').removeClass('selected');
