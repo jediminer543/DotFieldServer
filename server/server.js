@@ -34,6 +34,7 @@ var colors = [
     [0, 255, 255], // cyan
     [255, 90, 0], // orange - has a reduced amount of green to make less yellowy
 ];
+var faces = ['top', 'front', 'left', 'right', 'back', 'bottom'];
 
 var ConnectedClient = function (clientId, socket) {
     this.clientId = clientId;
@@ -73,7 +74,7 @@ ConnectedClient.prototype.initMsgReceivers = function () {
     }.bind(this));
 
     this.socket.on('faceselect', function (face) {
-        if (['top', 'front', 'left', 'right', 'back', 'bottom'].indexOf(face) !== -1) {
+        if (faces.indexOf(face) !== -1) {
             this.selectedFace = face;
         }
     }.bind(this));
@@ -116,10 +117,16 @@ ConnectedClient.prototype.sendWelcome = function() {
 
 
 
-var DotFieldServer = function (io, cubeManager) {
+var DotFieldServer = function (io, cubeManager, inactivityAutopilotStart) {
     this.clients = {};
     this.burnedClientIds = [];
     this.cubeManager = cubeManager; // used to communicate with connected cube(s)
+
+    // Setup Autopilot
+    this.autopilotEnabled = false;
+    this.autopilotIdleCounter = new IdleTrigger(inactivityAutopilotStart * 1000);
+    this.autopilotIdleCounter.on('idled', this.enableAutopilot.bind(this));
+    this.enableAutopilot();
 
     io.on('connection', this.onClientConnected.bind(this));
 }
@@ -160,6 +167,8 @@ DotFieldServer.prototype.onClientConnected = function (socket) {
                 };
                 this.broadcastToClients('activate', clientPayload, broadcastFilter);
                 this.cubeManager.sendToCubes('activate', cubePayload);
+                this.disableAutopilot();
+                this.autopilotIdleCounter.reset();
             }.bind(this));
 
             clientObj.on('deactivate', function (data) {
@@ -172,7 +181,8 @@ DotFieldServer.prototype.onClientConnected = function (socket) {
                     face: clientObj.selectedFace
                 };
                 this.broadcastToClients('deactivate', payload, broadcastFilter);
-                this.cubeManager.sendToCubes('deactivate', payload);
+                // this.cubeManager.sendToCubes('deactivate', payload); // DotField doesn't actually use the deactivate event, so don't send it
+                this.autopilotIdleCounter.reset();
             }.bind(this));
 
             clientObj.on('nyan', function (data) {
@@ -181,6 +191,8 @@ DotFieldServer.prototype.onClientConnected = function (socket) {
                     face: clientObj.selectedFace
                 };
                 this.cubeManager.sendToCubes('nyan', cubePayload);
+                this.disableAutopilot();
+                this.autopilotIdleCounter.reset();
             }.bind(this));
 
             this.clients[id] = clientObj;
@@ -216,6 +228,42 @@ DotFieldServer.prototype.broadcastToClients = function (message, data, filter) {
 
         client.send(message, data);
     }.bind(this));
+}
+
+/**
+ * Turn Autopilot on.
+ * Autopilot simulates random input, so the cube stays active and displays trails while nobody is
+ * actually using it.
+ * Autopilot mode is automatically disabled as soon as somebody starts interacting with it.
+ * Autopilot mode is automatically enabled after a number of seconds of inactivity.
+ */
+DotFieldServer.prototype.enableAutopilot = function() {
+    if (this.autopilotEnabled) return;
+
+    this.autopilotEnabled = true;
+    this.autopilotIdleCounter.disable();
+    console.log('Autopilot engaged');
+
+    this.autopilotInterval = setInterval(function() {
+        var payload = {
+            startColorIndex: randomInRange(0, colors.length),
+            endColorIndex: randomInRange(0, colors.length),
+            coords: {x: randomInRange(0, 8), y: randomInRange(0, 8)},
+            face: faces[randomInRange(0, faces.length)]
+        };
+
+        this.cubeManager.sendToCubes('activate', payload);
+    }.bind(this), 150);
+}
+
+DotFieldServer.prototype.disableAutopilot = function() {
+    if (!this.autopilotEnabled) return;
+
+    this.autopilotEnabled = false;
+    this.autopilotIdleCounter.enable();
+    console.log('Autopilot disengaged');
+
+    clearInterval(this.autopilotInterval);
 }
 
 
@@ -266,9 +314,51 @@ CubeClientManager.prototype.sendToCubes = function (event, data) {
 
 
 
+/**
+ * Fires an event when the "reset" method hasn't been called for <idleTime> milliseconds.
+ */
+var IdleTrigger = function(idleTime) {
+    this.idleTime = idleTime;
+    this.enabled = true;
+    this.reset();
+}
+util.inherits(IdleTrigger, EventEmitter);
+
+IdleTrigger.prototype.raiseEvent = function() {
+    this.emit('idled');
+}
+
+IdleTrigger.prototype.reset = function() {
+    if (!this.enabled) return;
+
+    clearTimeout(this.timer);
+    this.timer = setTimeout(this.raiseEvent.bind(this), this.idleTime);
+}
+
+IdleTrigger.prototype.disable = function() {
+    this.enabled = false;
+    clearTimeout(this.timer);
+}
+
+IdleTrigger.prototype.enable = function() {
+    this.enabled = true;
+    this.reset();
+}
+
+
+
+
+
+
+
+function randomInRange(min, max) {
+    return Math.floor((Math.random() * (max-min)) + min);
+}
+
+
 
 
 
 var cubeManager = new CubeClientManager(config);
-var dfServer = new DotFieldServer(io, cubeManager);
+var dfServer = new DotFieldServer(io, cubeManager, config.inactivityAutopilotStart || 10);
 

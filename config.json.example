@@ -1,5 +1,6 @@
 {
     "listenIp": "172.31.27.102",
     "listenCubePort": "47285",
-    "listenWebPort": "47284"
+    "listenWebPort": "47284",
+    "inactivityAutopilotStart": 10
 }
