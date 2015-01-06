@@ -1,13 +1,14 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
-var ConnectedClient = function (clientId, socket, faces) {
+var ConnectedClient = function (clientId, socket, faces, colors) {
     this.clientId = clientId;
     this.socket = socket;
     this.faces = faces;
-    this.startColorIndex = Math.floor(Math.random() * colors.length);
+    this.colors = colors;
+    this.startColorIndex = Math.floor(Math.random() * this.colors.length);
     do {
-        this.endColorIndex = Math.floor(Math.random() * colors.length);
+        this.endColorIndex = Math.floor(Math.random() * this.colors.length);
     } while (this.startColorIndex == this.endColorIndex);
     this.selectedFace = 'front';
 
@@ -74,7 +75,7 @@ ConnectedClient.prototype.sendWelcome = function() {
     this.socket.emit('welcome', {
         app: 'DotField',
         id: this.clientId,
-        colors: colors,
+        colors: this.colors,
         startColorIndex: this.startColorIndex,
         endColorIndex: this.endColorIndex,
         face: this.selectedFace

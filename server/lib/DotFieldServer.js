@@ -42,7 +42,7 @@ DotFieldServer.prototype.onClientConnected = function (socket) {
         if (id == null) {
             // This is a new client
             id = this.getNextClientId();
-            var clientObj = new ConnectedClient(id, socket, FACES);
+            var clientObj = new ConnectedClient(id, socket, FACES, COLORS);
 
             clientObj.on('activate', function (data) {
                 var clientPayload = {
