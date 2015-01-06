@@ -84,3 +84,8 @@ body {
 #nyan-mode-select {
     display: none;
 }
+
+#enable-fullscreen {
+    background-color: black;
+    color: black;
+}
