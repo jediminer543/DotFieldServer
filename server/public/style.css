@@ -22,7 +22,6 @@ body {
     background-color: black;
     border-left: solid 1px white;
     border-top: solid 1px white;
-    transition: background-color 1s;
 
     -webkit-touch-callout: none; /* disable text selection */
     -webkit-user-select: none;
@@ -42,8 +41,7 @@ body {
 }
 
 .cell.active {
-    transition: none;
-    background-color: white;
+    /*background-color: white;*/
 }
 
 .row {
