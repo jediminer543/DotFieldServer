@@ -1,4 +1,5 @@
 var EventedWebSocket = require('./EventedWebSocket');
+var WebSocketServer = require('ws').Server;
 
 var CubeClientManager = function(config) {
     this.wss = new WebSocketServer({port: config.listenCubePort});
