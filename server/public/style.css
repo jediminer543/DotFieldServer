@@ -79,6 +79,12 @@ body {
     border-color: red;
 }
 
+.color-label {
+    font-family: sans-serif;
+    display: inline-block;
+    width: 40px;
+}
+
 #nyan-mode-select {
     display: none;
 }
