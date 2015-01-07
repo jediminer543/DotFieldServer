@@ -107,7 +107,9 @@ $(function() {
         showSelectedFace(selectedFace);
     });
 
-    var nyanActivationCounter = 0;
+    var nyanActivationSequence = '2222111100006543';
+
+    var nyanNextPosition = 0;
     $('#controls').on('click', '.color-select', function() {
         var selectedColor = parseInt($(this).attr('data-colorindex'), 10);
         var isStartColor = $(this).hasClass('start-color');
@@ -120,14 +122,14 @@ $(function() {
 
         showSelectedColor(isStartColor, selectedColor);
 
-        if (selectedColor == 2) {
-            nyanActivationCounter++;
+        if (nyanActivationSequence[nyanNextPosition] == selectedColor) {
+            nyanNextPosition++;
+            if (nyanNextPosition == nyanActivationSequence.length) {
+                showNyanModeSelector();
+                nyanNextPosition = 0;
+            }
         } else {
-            nyanActivationCounter = 0;
-        }
-
-        if (nyanActivationCounter == 10) {
-            showNyanModeSelector();
+            nyanNextPosition = 0;
         }
     });
 
