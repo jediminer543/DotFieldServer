@@ -2,7 +2,7 @@ var IdleTrigger = require('./IdleTrigger');
 var ConnectedClient = require('./ConnectedClient');
 var FACES = ['top', 'front', 'left', 'right', 'back', 'bottom'];
 
-var DotFieldServer = function (io, cubeManager, colors, paletteColorMap, inactivityAutopilotStart) {
+var DotFieldServer = function (io, cubeManager, colors, paletteColorMap, autopilotStreamsPerSec, inactivityAutopilotStart) {
     this.clients = {};
     this.burnedClientIds = [];
     this.colors = colors;
@@ -12,6 +12,7 @@ var DotFieldServer = function (io, cubeManager, colors, paletteColorMap, inactiv
     // Setup Autopilot
     this.autopilotEnabled = false;
     this.autopilotPaletteOffset = 0;
+    this.autopilotStreamsPerSec = autopilotStreamsPerSec;
     setInterval(function() {
         this.autopilotPaletteOffset = (this.autopilotPaletteOffset + 1) % this.paletteColorMap.length;
     }.bind(this), 5000);
@@ -144,7 +145,7 @@ DotFieldServer.prototype.enableAutopilot = function() {
         };
 
         this.cubeManager.sendToCubes('activate', payload);
-    }.bind(this), 75);
+    }.bind(this), 1000 / this.autopilotStreamsPerSec);
 }
 
 // get a random colour from the current subset of the colour palette

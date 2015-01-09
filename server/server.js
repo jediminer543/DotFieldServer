@@ -43,4 +43,4 @@ app.get('/', function (req, res) {
 });
 
 var cubeManager = new CubeClientManager(config, COLORS);
-var dfServer = new DotFieldServer(io, cubeManager, COLORS, PALETTE_COLORS, config.inactivityAutopilotStart || 10);
+var dfServer = new DotFieldServer(io, cubeManager, COLORS, PALETTE_COLORS, config.autopilotStreamsPerSec || 20, config.inactivityAutopilotStart || 10);
