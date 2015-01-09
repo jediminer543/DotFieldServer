@@ -1,20 +1,11 @@
 var IdleTrigger = require('./IdleTrigger');
 var ConnectedClient = require('./ConnectedClient');
 var FACES = ['top', 'front', 'left', 'right', 'back', 'bottom'];
-var COLORS = [
-    // [255, 255, 255], // white
-    [255, 0, 0], // red
-    [0, 255, 0], // green
-    [0, 0, 255], // blue
-    [255, 220, 0], // yellow - has a reduced amount of green to remove green tint
-    [255, 0, 255], // pink
-    [0, 255, 255], // cyan
-    [255, 90, 0], // orange - has a reduced amount of green to make less yellowy
-];
 
-var DotFieldServer = function (io, cubeManager, inactivityAutopilotStart) {
+var DotFieldServer = function (io, cubeManager, colors, inactivityAutopilotStart) {
     this.clients = {};
     this.burnedClientIds = [];
+    this.colors = colors;
     this.cubeManager = cubeManager; // used to communicate with connected cube(s)
 
     // Setup Autopilot
@@ -42,7 +33,7 @@ DotFieldServer.prototype.onClientConnected = function (socket) {
         if (id == null) {
             // This is a new client
             id = this.getNextClientId();
-            var clientObj = new ConnectedClient(id, socket, FACES, COLORS);
+            var clientObj = new ConnectedClient(id, socket, FACES, this.colors);
 
             clientObj.on('activate', function (data) {
                 var clientPayload = {
@@ -141,8 +132,8 @@ DotFieldServer.prototype.enableAutopilot = function() {
 
     this.autopilotInterval = setInterval(function() {
         var payload = {
-            startColorIndex: randomInRange(0, COLORS.length),
-            endColorIndex: randomInRange(0, COLORS.length),
+            startColorIndex: randomInRange(0, this.colors.length),
+            endColorIndex: randomInRange(0, this.colors.length),
             coords: {x: randomInRange(0, 8), y: randomInRange(0, 8)},
             face: FACES[randomInRange(0, FACES.length)]
         };

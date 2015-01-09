@@ -1,8 +1,9 @@
 var EventedWebSocket = require('./EventedWebSocket');
 var WebSocketServer = require('ws').Server;
 
-var CubeClientManager = function(config) {
+var CubeClientManager = function(config, colors) {
     this.wss = new WebSocketServer({port: config.listenCubePort});
+    this.colors = colors;
     console.log('Listening for Python pattern connection on port %d', config.listenCubePort);
 
     this.connectedCubes = [];
@@ -14,7 +15,7 @@ var CubeClientManager = function(config) {
 
             ews.send('welcome', {
                 app: 'DotField',
-                colors: colors
+                colors: this.colors
             });
 
             this.connectedCubes.push(ews);
