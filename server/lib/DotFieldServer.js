@@ -2,14 +2,19 @@ var IdleTrigger = require('./IdleTrigger');
 var ConnectedClient = require('./ConnectedClient');
 var FACES = ['top', 'front', 'left', 'right', 'back', 'bottom'];
 
-var DotFieldServer = function (io, cubeManager, colors, inactivityAutopilotStart) {
+var DotFieldServer = function (io, cubeManager, colors, paletteColorMap, inactivityAutopilotStart) {
     this.clients = {};
     this.burnedClientIds = [];
     this.colors = colors;
+    this.paletteColorMap = paletteColorMap;
     this.cubeManager = cubeManager; // used to communicate with connected cube(s)
 
     // Setup Autopilot
     this.autopilotEnabled = false;
+    this.autopilotPaletteOffset = 0;
+    setInterval(function() {
+        this.autopilotPaletteOffset = (this.autopilotPaletteOffset + 1) % this.paletteColorMap.length;
+    }.bind(this), 5000);
     this.autopilotIdleCounter = new IdleTrigger(inactivityAutopilotStart * 1000);
     this.autopilotIdleCounter.on('idled', this.enableAutopilot.bind(this));
     this.enableAutopilot();
@@ -132,14 +137,20 @@ DotFieldServer.prototype.enableAutopilot = function() {
 
     this.autopilotInterval = setInterval(function() {
         var payload = {
-            startColorIndex: randomInRange(0, this.colors.length),
-            endColorIndex: randomInRange(0, this.colors.length),
+            startColorIndex: this.getRandomAutopilotColor(),
+            endColorIndex: this.getRandomAutopilotColor(),
             coords: {x: randomInRange(0, 8), y: randomInRange(0, 8)},
             face: FACES[randomInRange(0, FACES.length)]
         };
 
         this.cubeManager.sendToCubes('activate', payload);
     }.bind(this), 75);
+}
+
+// get a random colour from the current subset of the colour palette
+DotFieldServer.prototype.getRandomAutopilotColor = function() {
+    var randomIndex = (randomInRange(0, 3) + this.autopilotPaletteOffset) % this.paletteColorMap.length;
+    return this.paletteColorMap[randomIndex];
 }
 
 DotFieldServer.prototype.disableAutopilot = function() {
@@ -152,6 +163,7 @@ DotFieldServer.prototype.disableAutopilot = function() {
     clearInterval(this.autopilotInterval);
 }
 
+// max is exclusive
 function randomInRange(min, max) {
     return Math.floor((Math.random() * (max-min)) + min);
 }

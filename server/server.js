@@ -11,13 +11,22 @@ var config = require(__dirname + '/../config.json');
 
 var COLORS = [
     // [255, 255, 255], // white
-    [255, 0, 0], // red
-    [0, 255, 0], // green
-    [0, 0, 255], // blue
-    [255, 220, 0], // yellow - has a reduced amount of green to remove green tint
-    [255, 0, 255], // pink
-    [0, 255, 255], // cyan
-    [255, 90, 0], // orange - has a reduced amount of green to make less yellowy
+    [255, 0, 0], // red 0
+    [0, 255, 0], // green 1
+    [0, 0, 255], // blue 2
+    [255, 220, 0], // yellow - has a reduced amount of green to remove green tint 3
+    [255, 0, 255], // pink 4
+    [0, 255, 255], // cyan 5
+    [255, 90, 0], // orange - has a reduced amount of green to make less yellowy 6
+];
+var PALETTE_COLORS = [
+    0, // red
+    6, // orange
+    3, // yellow
+    1, // green
+    5, // cyan
+    2, // blue
+    4, // pink
 ];
 
 app.set('view engine', 'ejs');
@@ -34,4 +43,4 @@ app.get('/', function (req, res) {
 });
 
 var cubeManager = new CubeClientManager(config, COLORS);
-var dfServer = new DotFieldServer(io, cubeManager, COLORS, config.inactivityAutopilotStart || 10);
+var dfServer = new DotFieldServer(io, cubeManager, COLORS, PALETTE_COLORS, config.inactivityAutopilotStart || 10);
