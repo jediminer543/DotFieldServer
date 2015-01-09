@@ -139,7 +139,7 @@ DotFieldServer.prototype.enableAutopilot = function() {
         };
 
         this.cubeManager.sendToCubes('activate', payload);
-    }.bind(this), 150);
+    }.bind(this), 75);
 }
 
 DotFieldServer.prototype.disableAutopilot = function() {
