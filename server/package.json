@@ -1,21 +1,22 @@
 {
-  "name": "GravityBlocksServer",
+  "name": "DotFieldServer",
   "version": "0.0.1",
   "private": true,
   "description": "Node daemon to serve the UI for an interactive art exhibit",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/ultrafez/GravityBlocks.git"
+    "url": "git://github.com/ultrafez/DotFieldServer.git"
   },
   "author": "Alex Silcock",
   "license": "GPL V3",
   "bugs": {
-    "url": "https://github.com/ultrafez/GravityBlocks/issues"
+    "url": "https://github.com/ultrafez/DotFieldServer/issues"
   },
-  "homepage": "https://github.com/ultrafez/GravityBlocks",
+  "homepage": "https://github.com/ultrafez/DotFieldServer",
   "dependencies": {
     "socket.io": "~1.0.6",
     "express": "~4.8.7",
