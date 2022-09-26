@@ -3,9 +3,15 @@ var EventEmitter = require('events').EventEmitter;
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
 var CubeClientManager = require('./lib/CubeClientManager');
 var DotFieldServer = require('./lib/DotFieldServer');
+
+var io = require('socket.io')(server, {
+    cors: {
+        origin: '*',
+        methods: ["GET", "POST"]
+    }
+});
 
 var config = require(__dirname + '/../config.json');
 

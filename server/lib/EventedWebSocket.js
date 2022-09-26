@@ -4,10 +4,11 @@ var EventEmitter = require('events').EventEmitter;
 var EventedWebSocket = function (ws) {
     this.ws = ws;
 
-    this.ws.on('message', function (message) {
-    	this.emit('message', message); // send the raw message just in case it's wanted
+    this.ws.on('message', function (messageBuffer) {
+        const messageText = messageBuffer.toString();
+    	this.emit('message', messageText); // send the raw message just in case it's wanted
     	
-        var msgParts = message.split('|', 1);
+        var msgParts = messageText.split('|', 1);
         if (msgParts.length == 1) {
             this.emit(msgParts[0]);
         } else {

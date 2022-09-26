@@ -25,7 +25,7 @@ $(function() {
     // When nyan mode is on, touches are sent as nyan creation messages rather than standard activations
     var nyanMode = false;
 
-    var socket = io.connect('http://' + config.listenIp);
+    var socket = io.connect('http://' + config.listenIp + ":" + config.listenWebPort);
     socket.on('connect', function() {
         console.log('Connected to server');
 
