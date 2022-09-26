@@ -14,9 +14,35 @@ cd server
 npm install
 ```
 
-# Run
+# Configuration
+
+Network connections
+
+```
+                   ┌──────────────────┐
+    :listenWebPort │                  │  :listenCubePort
+         ┌────────►│  DotFieldServer  │◄───┐
+         │         │                  │    │
+         │         └──────────────────┘    │
+         │                                 │
+         │                                 │
+         │                                 │
+         │                                 │
+         │                                 │
+         │                                 │
+         │                           ┌─────┴──────┐
+  ┌──────┴──────────┐                │            │
+  │                 │                │  cube.py   │
+  │  Web browser    │                │  dotfield  │
+  │                 │                │  pattern   │
+  └─────────────────┘                │            │
+                                     └────────────┘
+```
 
 Copy `config.json.example` to `config.json` and edit it to set your config values.
+
+
+# Run
 
 ```
 cd server
