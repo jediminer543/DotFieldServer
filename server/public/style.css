@@ -5,18 +5,21 @@ body {
 
 #container {
     background-color: black; /* this is required because when this element is made fullscreen, WebKit by default gives it a white background */
+    display: flex;
+    align-items: flex-start; /* Aligns controls to the top of the grid */
+    gap: 0px;
 }
 
 #gridContainer {
     /* 8 x max-width of .cell. Without this contraint here, the
     width of the cells would be constrained, but the height would not. */
-    max-width: 640px;
+    max-width: 320px;
 }
 
 .cell {
     display: inline-block;
     width: 12%;
-    max-width: 80px;
+    max-width: 40px;
     height: 0;
     padding-bottom: 12%; /* hack to constrain the cells to being square. Padding % is based on width, not height */
     background-color: black;
