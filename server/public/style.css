@@ -13,8 +13,8 @@ body {
 #gridContainer {
     /* 8 x max-width of .cell. Without this contraint here, the
     width of the cells would be constrained, but the height would not. */
-    width: 100vh
-    height: 100vh
+    width: 100vh;
+    height: 100vh;
 }
 
 .cell {
